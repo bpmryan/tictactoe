@@ -23,7 +23,7 @@ const GameController = (function () {
   // game logic
   const players = [
     createPlayer("Player 1", "X"),
-    createPlayer("Player 2", "0"),
+    createPlayer("Player 2", "O"),
   ];
 
   let activePlayer = players[0];
