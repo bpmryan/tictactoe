@@ -1,4 +1,4 @@
-// console.log("script loaded");
+console.log("script loaded");
 
 // module pattern for gameboard (only need one)
 const Gameboard = (function () {
@@ -58,7 +58,7 @@ const GameController = (function () {
 
   // if there is a tie
   const isTie = () => {
-    return Gameboard.getBoard().every(cell => cell !== "");
+    return Gameboard.getBoard().every((cell) => cell !== "");
   };
 
   const playRound = (index) => {
@@ -100,3 +100,19 @@ const checkWin = () => {
     });
   });
 };
+
+const squares = document.querySelectorAll(".square");
+
+squares.forEach((square) => {
+  square.addEventListener("click", (e) => {
+    // e.target is the specific div clicked
+    // .dataset.index pulls the html divs
+    const selectedIndex = e.target.dataset.index;
+
+    // pass to controller
+    GameController.playRound(selectedIndex);
+
+    // update the screen after controller processes the move
+    updateDisplay();
+  });
+});
