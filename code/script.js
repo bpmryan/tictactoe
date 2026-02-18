@@ -73,13 +73,11 @@ const GameController = (function () {
     // game conditions to end/continue game
     if (checkWin()) {
       gameOver = true;
-      alert(`${activePlayer.name} wins!`);
-      Gameboard.reset();
+      return `${activePlayer.name} wins!`;
     }
     if (isTie()) {
       gameOver = true;
-      alert("There is a draw");
-      return Gameboard.reset();
+      return;
     }
     // If no win, switchPlayerTurn() (continue game)
     else {
@@ -87,56 +85,53 @@ const GameController = (function () {
     }
   };
 
-  return { playRound };
+  // set the status of the game
+  const getGameOver = () => gameOver;
+
+  const resetGame = () => {
+    gameOver = false;
+    activePlayer = players[0];
+  };
+  return { playRound, getGameOver, resetGame };
 })();
 
-const checkWin = () => {
-  const board = Gameboard.getBoard();
-
-  // check any win conditions
-  return winConditions.some((combination) => {
-    return combination.every((index) => {
-      return board[index] === activePlayer.mark;
-    });
-  });
-};
-
-// logic for each square in the tic tac toe grid
-const squares = document.querySelectorAll(".square");
-
-squares.forEach((square) => {
-  square.addEventListener("click", (e) => {
-    // e.target is the specific div clicked
-    // .dataset.index pulls the html divs
-    const selectedIndex = e.target.dataset.index;
-
-    // pass to controller
-    GameController.playRound(selectedIndex);
-
-    // update the screen after controller processes the move
-    updateDisplay();
-  });
-});
-
 // display logic
-const DisplayController = (function() {
-    const squares = document.querySelectorAll('.square');
+const DisplayController = (function () {
+  const squares = document.querySelectorAll(".square");
 
-    const updateScreen = () => {
-        const board = Gameboard.getBoard();
-        squares.forEach((square, index) => {
-            // set the text of the div to X or O
-            square.textContent = board[index];
-        });
-    };
-
-    squares.forEach(square => {
-        square.addEventListener('click', (e) => {
-            const index = e.target.dataset.index;
-            GameController.playRound(index);
-            updateScreen();
-        });
+  const updateScreen = () => {
+    const board = Gameboard.getBoard();
+    squares.forEach((square, index) => {
+      // set the text of the div to X or O
+      square.textContent = board[index];
     });
+  };
 
-    return { updateScreen };
+  // interact with GameController
+  squares.forEach((square) => {
+    square.addEventListener("click", (e) => {
+      // e.target is the specific div clicked
+      // .dataset.index pulls the html divs
+      const selectedIndex = e.target.dataset.index;
+
+      // tell the controller to play
+      GameController.playRound(selectedIndex);
+
+      // update screen so that user sees the mark
+      updateScreen();
+
+      // check if the game has ended to show the popup
+      if (GameController.getGameOver()) {
+        setTimeout(() => {
+          const restart = confirm("Game over! Do you want to play again?");
+          if (restart) {
+            Gameboard.reset();
+            GameController.resetGame();
+            updateScreen();
+          }
+        }, 100);
+      }
+    });
+  });
+  return { updateScreen };
 })();
