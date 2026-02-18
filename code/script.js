@@ -101,6 +101,7 @@ const checkWin = () => {
   });
 };
 
+// logic for each square in the tic tac toe grid
 const squares = document.querySelectorAll(".square");
 
 squares.forEach((square) => {
@@ -116,3 +117,26 @@ squares.forEach((square) => {
     updateDisplay();
   });
 });
+
+// display logic
+const DisplayController = (function() {
+    const squares = document.querySelectorAll('.square');
+
+    const updateScreen = () => {
+        const board = Gameboard.getBoard();
+        squares.forEach((square, index) => {
+            // set the text of the div to X or O
+            square.textContent = board[index];
+        });
+    };
+
+    squares.forEach(square => {
+        square.addEventListener('click', (e) => {
+            const index = e.target.dataset.index;
+            GameController.playRound(index);
+            updateScreen();
+        });
+    });
+
+    return { updateScreen };
+})();
